@@ -30,15 +30,20 @@ export default class  {
         this.elt.querySelector('.todo-count strong').innerText = 
             this.todos.filter((todo) => !todo.completed).length;
     }
-    add (data) {
+    async add (data) {
         // 1. Ajout de la todo dans le this.todos
             const todo = {
                 content: data,
                 completed: false
                 };
-            const newTodo = new Todo(todo);
+
+            // 2. Ajout de la todo dans l'API         
+            const addedTodo = await  DB.addOne(todo);
+
+            const newTodo = new Todo(addedTodo);
             this.todos.unshift(newTodo);
-        // 2. Ajout de la todo dans le DOM
+
+        // 3. Ajout de la todo dans le DOM
                 // this.elt.querySelector('.todo-list').innerHTML = 
                 // newTodo.render() + this.elt.querySelector('.todo-list').innerHTML;
 
@@ -47,11 +52,7 @@ export default class  {
                 // faire un insertBefore
                 const newTodoElement = document.createElement('div');
                 document.querySelector('.todo-list').insertBefore(newTodoElement,document.querySelector('.todo-list').children[0]);
-                newTodoElement.outerHTML = newTodo.render();
-
-        // 3. Ajout de la todo dans l'API
-                DB.addOne(todo);
-                
+                newTodoElement.outerHTML = newTodo.render();   
 
         // 4. Je vide l'input
             this.newTodoInput.value = '';
@@ -60,27 +61,59 @@ export default class  {
             this.renderNotCompletedTodosCount();
         }
 
-        filterTodos(filterType) {
-            const allTodos = this.elt.querySelectorAll('.todo-list li');
-            const filters = this.elt.querySelectorAll('.filters a');
-            filters.forEach(filter => filter.classList.remove('selected'));
+        deleteOne(id) {
+            
+            this.todos = this.todos.filter(todo => todo.id !== id);
+            this.renderNotCompletedTodosCount();
+        }
 
+        filterTodos(filterType) {
+            const allTodos = document.querySelectorAll('.todo-list li');
+            const filters = document.querySelectorAll('.filters a');
+            
+            filters.forEach(filter => filter.classList.remove('selected'));
+            
             allTodos.forEach(todo => {
                 const isCompleted = todo.classList.contains('completed');
                 switch (filterType) {
                     case 'all':
                         todo.style.display = '';
-                        this.elt.querySelector('.filters a[href="#/"]').classList.add('selected');
+                        document.querySelector('.filters a[href="#/"]').classList.add('selected');
                         break;
                     case 'active':
                         todo.style.display = isCompleted ? 'none' : '';
-                        this.elt.querySelector('.filters a[href="#/active"]').classList.add('selected');
+                        document.querySelector('.filters a[href="#/active"]').classList.add('selected');
                         break;
                     case 'completed':
                         todo.style.display = isCompleted ? '' : 'none';
-                        this.elt.querySelector('.filters a[href="#/completed"]').classList.add('selected');
+                        document.querySelector('.filters a[href="#/completed"]').classList.add('selected');
                         break;
                 }
             });
-          }
+        }
+
+        async selectAll(isChecked) {
+            // Mettre à jour chaque Todo
+            for (let todo of this.todos) {
+                if (todo.completed !== isChecked) {
+                    todo.completed = isChecked;
+                    try {
+                        // Mettre à jour l'API
+                        await DB.updateOneById(todo.id, { completed: isChecked });
+                        
+                        // Mettre à jour le DOM directement
+                        const todoElement = document.querySelector(`[data-id="${todo.id}"]`);
+                        todoElement.className = isChecked ? 'completed' : '';
+                        todoElement.querySelector('.toggle').checked = isChecked;
+                        
+                    } catch (error) {
+                        console.error(`Erreur lors de la mise à jour de la Todo avec l'ID ${todo.id} :`, error);
+                    }
+                }
+            }
+            
+            // Mettre à jour le compteur
+            this.renderNotCompletedTodosCount();
+        }
+        
 }

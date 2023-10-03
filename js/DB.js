@@ -29,7 +29,7 @@ export default class {
     return await reponse.json();
     }
 
-    static async deleteOneById (id, data) {
+    static async deleteOneById (id) {
         const reponse = await fetch(`${this.apiURL}/todos/${id}`, {
             method: 'DELETE',
     });

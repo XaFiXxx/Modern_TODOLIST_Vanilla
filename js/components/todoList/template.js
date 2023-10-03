@@ -12,7 +12,7 @@ export default function(data) {
             />
           </header>
           <section class="main">
-            <input id="toggle-all" class="toggle-all" type="checkbox" />
+            <input id="toggle-all" class="toggle-all" type="checkbox" onclick="TodoList.selectAll(this.checked)" />
             <label for="toggle-all">Mark all as complete</label>
             <ul class="todo-list">
              ${ data.todos.map(todo => todo.render()).join('') }
@@ -22,13 +22,13 @@ export default function(data) {
             <span class="todo-count"><strong>1</strong> item(s) left</span>
             <ul class="filters" onclick="TodoList.filterTodos()">
               <li>
-                <a href="#/" class="selected">All</a>
+                <a href="#/" class="selected" onclick="TodoList.filterTodos('all')">All</a>
               </li>
               <li>
-                <a href="#/active">Active</a>
+                <a href="#/active" onclick="TodoList.filterTodos('active')">Active</a>
               </li>
               <li>
-                <a href="#/completed">Completed</a>
+                <a href="#/completed" onclick="TodoList.filterTodos('completed')">Completed</a>
               </li>
             </ul>
             <button class="clear-completed">Clear completed</button>

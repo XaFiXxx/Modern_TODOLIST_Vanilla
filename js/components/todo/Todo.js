@@ -1,6 +1,6 @@
-import TodoList from '../todoList/TodoList';
 import getTemplate from './template';
 import DB from '../../DB.js'
+
 
 export default class {
     constructor(data){
@@ -29,12 +29,14 @@ export default class {
 
     }
 
-    delete () {
+    async delete () {
         const todo = document.querySelector(`[data-id="${this.id}"]`);
         // Modifier dans le DOM
         todo.remove();
-        DB.deleteOneById(this.id);
-        // Lancer le todoList.deleteOneById() qui lance DB.deleteOneById()
+        // Modifier l'API
+        await DB.deleteOneById(this.id);
+        //Lancer la function de todoListe
+        TodoList.deleteOne(this.id);
     }
 
     update () {
