@@ -5,7 +5,7 @@ export default function (todo) {
     <li data-id="${ todo.id }" class="${ todo.completed ? 'completed' : '' }">
     <div class="view">
     <input class="toggle" type="checkbox" ${ todo.completed ? 'checked' : '' } onclick="TodoList.todos.filter(todo => todo.id == ${ todo.id })[0].toggleComplete()" />
-    <label>${ todo.content }</label>
+    <label ondblclick="TodoList.todos.filter(todo => todo.id == ${ todo.id })[0].edit()">${ todo.content }</label>
     <button data-id="${ todo.id }" class="destroy" onclick="TodoList.todos.filter(todo => todo.id == ${ todo.id })[0].delete()"></button>
     </div>
 </li>

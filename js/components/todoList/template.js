@@ -31,7 +31,7 @@ export default function(data) {
                 <a href="#/completed" onclick="TodoList.filterTodos('completed')">Completed</a>
               </li>
             </ul>
-            <button class="clear-completed">Clear completed</button>
+            <button class="clear-completed" onclick="TodoList.clearCompletedTodos()">Clear completed</button>
           </footer>
         </section>
         <footer class="info">
